@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>C++ Handwritten Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fbf9f2;
+    --line:#bcd4e6;
+    --margin:#e58aa0;
+    --ink-blue:#1c3a6e;
+    --ink-black:#20232a;
+    --ink-red:#b5323f;
+    --ink-green:#2f6d3a;
+    --highlight:#fff29a;
+    --title-orange:#e06b28;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:#3c3f46;
+    font-family:'Kalam', cursive;
+    color:var(--ink-blue);
+  }
+  .toolbar{
+    position:sticky; top:0; z-index:50;
+    background:#20232a; color:#f4f1ea; padding:10px 18px;
+    display:flex; align-items:center; gap:14px; font-family:'Kalam',cursive;
+    box-shadow:0 2px 8px rgba(0,0,0,.4);
+  }
+  .toolbar select{
+    font-family:'Kalam',cursive; padding:6px 10px; border-radius:6px; border:none;
+  }
+  .toolbar b{color:var(--highlight); font-family:'Caveat',cursive; font-size:22px;}
+
+  .page{
+    max-width:850px;
+    margin:26px auto;
+    background:var(--paper);
+    background-image:
+      repeating-linear-gradient(var(--paper) 0px, var(--paper) 33px, var(--line) 34px);
+    background-position: 0 90px;
+    border-radius:4px;
+    box-shadow:0 12px 30px rgba(0,0,0,.45);
+    padding:40px 40px 50px 70px;
+    position:relative;
+    min-height:400px;
+  }
+  .page::before{ /* red margin line */
+    content:"";
+    position:absolute; left:52px; top:0; bottom:0; width:2px; background:var(--margin); opacity:.7;
+  }
+  .page::after{ /* spiral holes */
+    content:"";
+    position:absolute; left:-14px; top:30px; bottom:30px; width:22px;
+    background-image: radial-gradient(circle, #cfcfcf 5px, transparent 6px);
+    background-size: 22px 46px;
+    background-repeat: repeat-y;
+    opacity:.6;
+  }
+  .badge{
+    display:flex; justify-content:space-between; align-items:center;
+    font-family:'Kalam',cursive; font-size:14px; color:#555; margin-bottom:6px;
+  }
+  .badge .brand{display:flex; align-items:center; gap:8px;}
+  .brand .dot{
+    width:34px;height:34px;border-radius:50%;background:var(--title-orange);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Caveat',cursive;font-weight:700;font-size:20px;
+  }
+  .pagebox{border:2px solid var(--margin); border-radius:4px; padding:3px 10px; font-size:12px; color:#777;}
+
+  h1.big-title{
+    font-family:'Caveat',cursive;
+    font-weight:700;
+    font-size:64px;
+    color:var(--title-orange);
+    -webkit-text-stroke: 1.5px #7a3b12;
+    margin:10px 0 20px 0;
+    text-align:center;
+    letter-spacing:2px;
+  }
+  .index-list{list-style:none; padding:0; margin:0; font-size:22px; line-height:2.15;}
+  .index-list li{cursor:pointer;}
+  .index-list a{color:var(--ink-blue); text-decoration:none;}
+  .index-list a:hover{color:var(--ink-red); text-decoration:underline wavy;}
+  .index-list .num{color:var(--ink-red); font-weight:700; margin-right:6px;}
+  .section-label{
+    font-family:'Caveat',cursive; font-weight:700; font-size:30px; color:var(--ink-red);
+    margin:26px 0 6px 0; text-decoration:underline; text-decoration-color:var(--ink-red);
+  }
+
+  .chapter-num{
+    font-family:'Caveat',cursive; font-size:22px; color:#888;
+  }
+  h2.chap-title{
+    font-family:'Caveat',cursive; font-weight:700; font-size:42px;
+    color:var(--ink-black); border-bottom:3px solid var(--ink-black);
+    display:inline-block; margin:2px 0 22px 0;
+  }
+  h2.chap-title .cpp{color:var(--title-orange);}
+
+  .lead{font-size:21px; line-height:1.75; margin-bottom:16px;}
+  .lead .mark{background:var(--highlight); padding:0 4px; font-weight:700;}
+
+  .box{
+    border:2.5px dashed var(--ink-blue);
+    border-radius:10px;
+    padding:14px 18px;
+    margin:16px 0;
+    background:rgba(255,255,255,.5);
+  }
+  .box.syntax::before{content:"✏️ SYNTAX"; display:block; font-family:'Caveat',cursive; font-size:22px; color:var(--ink-green); margin-bottom:4px;}
+  .box.example::before{content:"💡 EXAMPLE"; display:block; font-family:'Caveat',cursive; font-size:22px; color:var(--ink-red); margin-bottom:4px;}
+  .box.output::before{content:"🖥️ OUTPUT"; display:block; font-family:'Caveat',cursive; font-size:22px; color:#555; margin-bottom:4px;}
+  .box.tip{border-style:solid; border-color:var(--ink-green); background:#eefaf0;}
+  .box.tip::before{content:"⭐ REMEMBER"; display:block; font-family:'Caveat',cursive; font-size:22px; color:var(--ink-green); margin-bottom:4px;}
+
+  pre{
+    font-family:'Kalam',cursive;
+    font-size:18px; margin:0; white-space:pre-wrap; color:var(--ink-black);
+  }
+  .kw{color:#0b5fa5; font-weight:700;}
+  .str{color:var(--ink-red);}
+  .cm{color:#7a7a7a; font-style:italic;}
+
+  ul.points{margin:10px 0; padding-left:22px; font-size:20px; line-height:1.7;}
+  ul.points li::marker{content:"➤ "; color:var(--ink-red);}
+
+  .nav-btns{display:flex; justify-content:space-between; margin-top:26px; font-family:'Caveat',cursive; font-size:22px;}
+  .nav-btns a{color:var(--ink-blue); text-decoration:none; cursor:pointer;}
+  .nav-btns a:hover{color:var(--ink-red);}
+
+  .doodle{position:absolute; opacity:.18; font-size:70px; pointer-events:none;}
+
+  @media print{
+    body{background:#fff;}
+    .toolbar{display:none;}
+    .page{box-shadow:none; margin:0; page-break-after:always;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <b>C++ Notes</b>
+  <span>Jump to chapter:</span>
+  <select id="jumpSelect" onchange="location.hash=this.value;"></select>
+</div>
+
+<div id="root"></div>
+
+<script>
+const chapters = [
+{ n:1, section:"C++ TUTORIAL", title:"C++ Introduction", body:`
+<p class="lead">C++ is a <span class="mark">cross-platform</span> programming language used to build high-performance applications. It was created by <b>Bjarne Stroustrup</b> as an extension of the C language, so it is often called <span class="mark">"C with Classes."</span></p>
+<ul class="points">
+<li>C++ gives the programmer a lot of control over memory and system resources.</li>
+<li>C++ is an <b>object-oriented</b> language — code is organised into classes and objects, which keeps large programs clean and reusable.</li>
+<li>Because it's portable, C++ code can be adapted to run on many different platforms (Windows, Linux, Mac).</li>
+<li>C++ powers operating systems, game engines, browsers, and embedded systems.</li>
+</ul>
+<div class="box tip">Think of C: as the "engine parts" and C++ as the "engine parts + a toolbox (classes) to organise them neatly."</div>
+`},
+{ n:2, section:"C++ TUTORIAL", title:"C++ Intro (Why Use C++)", body:`
+<p class="lead">Why learn C++ instead of jumping to a "simpler" language? Because understanding C++ teaches you <span class="mark">how computers actually work underneath</span> — memory, pointers, performance.</p>
+<ul class="points">
+<li>C++ is one of the world's most popular languages — huge community & job demand.</li>
+<li>It's used in Operating Systems, GUIs, and embedded systems (cars, routers, IoT devices).</li>
+<li>It's fast — often used when speed really matters (games, trading systems, simulations).</li>
+<li>Learning C++ makes other languages (Java, C#, Python internals) much easier to understand later.</li>
+</ul>
+<div class="box tip">Difference between C and C++: They share almost the same syntax, but C++ additionally supports <b>classes and objects</b>, while plain C does not.</div>
+`},
+{ n:3, section:"C++ TUTORIAL", title:"C++ Get Started", body:`
+<p class="lead">To start writing C++, you only need two things:</p>
+<ul class="points">
+<li>A <b>text editor</b> (like Notepad, VS Code) — to write your C++ code.</li>
+<li>A <b>compiler</b> (like GCC/g++) — to translate your code into a language the computer understands (machine code).</li>
+</ul>
+<div class="box syntax"><pre>1. Write code   -&gt;  file.cpp
+2. Compile it   -&gt;  g++ file.cpp -o file
+3. Run it       -&gt;  ./file</pre></div>
+<div class="box tip">Many beginners skip installing a compiler and instead use an <b>online compiler</b> (like replit.com or onlinegdb.com) to practice instantly.</div>
+`},
+{ n:4, section:"C++ TUTORIAL", title:"C++ Syntax", body:`
+<p class="lead">Every C++ program follows a basic structure. Let's break down the smallest possible program:</p>
+<div class="box example"><pre><span class="kw">#include</span> &lt;iostream&gt;
+<span class="kw">using namespace</span> std;
+
+<span class="kw">int</span> main() {
+    cout &lt;&lt; <span class="str">"Hello World!"</span>;
+    <span class="kw">return</span> 0;
+}</pre></div>
+<ul class="points">
+<li><b>#include &lt;iostream&gt;</b> — a header file that lets us use input/output features like cout.</li>
+<li><b>using namespace std;</b> — lets us use names (like cout) without writing std:: every time.</li>
+<li><b>int main()</b> — every C++ program must have this; execution always starts here.</li>
+<li><b>{ }</b> curly braces mark the start and end of a block of code.</li>
+<li>Every statement ends with a <b>semicolon ;</b> — forgetting it is the #1 beginner error!</li>
+</ul>
+`},
+{ n:5, section:"C++ TUTORIAL", title:"C++ Output", body:`
+<p class="lead">We use <span class="mark">cout</span> (pronounced "see-out") along with the <b>&lt;&lt;</b> operator to print things to the screen.</p>
+<div class="box example"><pre>cout &lt;&lt; <span class="str">"I am learning C++"</span>;</pre></div>
+<div class="box output"><pre>I am learning C++</pre></div>
+<ul class="points">
+<li>You can print multiple things by chaining &lt;&lt; multiple times.</li>
+<li>Use <b>\\n</b> or <b>endl</b> to move to a new line.</li>
+</ul>
+<div class="box example"><pre>cout &lt;&lt; <span class="str">"Line 1"</span> &lt;&lt; endl;
+cout &lt;&lt; <span class="str">"Line 2"</span>;</pre></div>
+`},
+{ n:6, section:"C++ TUTORIAL", title:"C++ Comments", body:`
+<p class="lead">Comments are notes in your code that the compiler <span class="mark">ignores</span>. They help you (and others) understand what the code does.</p>
+<div class="box syntax"><pre><span class="cm">// This is a single-line comment</span>
+
+<span class="cm">/* This is a
+   multi-line comment */</span></pre></div>
+<div class="box tip">Good programmers comment on the <i>why</i>, not the <i>what</i> — the code already shows what it does.</div>
+`},
+{ n:7, section:"C++ TUTORIAL", title:"C++ Variables", body:`
+<p class="lead">A variable is a <span class="mark">named container</span> used to store data that can change during program execution.</p>
+<div class="box syntax"><pre><span class="kw">int</span> age = 25;
+<span class="kw">double</span> price = 19.99;
+<span class="kw">char</span> grade = <span class="str">'A'</span>;
+<span class="kw">string</span> name = <span class="str">"Riya"</span>;</pre></div>
+<ul class="points">
+<li>You must declare a <b>type</b> before using a variable in C++ (unlike Python).</li>
+<li>Variable names can't start with a number and can't contain spaces.</li>
+<li>C++ is case-sensitive: <b>age</b> and <b>Age</b> are different variables.</li>
+</ul>
+`},
+{ n:8, section:"C++ TUTORIAL", title:"C++ User Input", body:`
+<p class="lead">We use <span class="mark">cin</span> ("see-in") with the <b>&gt;&gt;</b> operator to take input from the user.</p>
+<div class="box example"><pre><span class="kw">int</span> age;
+cout &lt;&lt; <span class="str">"Enter your age: "</span>;
+cin &gt;&gt; age;
+cout &lt;&lt; <span class="str">"You are "</span> &lt;&lt; age &lt;&lt; <span class="str">" years old."</span>;</pre></div>
+<div class="box tip">cin stops reading at the first space — to read a full sentence, use <b>getline(cin, variable)</b> instead.</div>
+`},
+{ n:9, section:"C++ TUTORIAL", title:"C++ Data Types", body:`
+<p class="lead">Data types tell the compiler what <span class="mark">kind of value</span> a variable will hold, and how much memory to reserve for it.</p>
+<div class="box syntax"><pre><span class="kw">int</span>     - whole numbers        (e.g. 10, -5)
+<span class="kw">float</span>   - decimal numbers      (e.g. 5.75)
+<span class="kw">double</span>  - larger decimal numbers
+<span class="kw">char</span>    - a single character   (e.g. 'A')
+<span class="kw">bool</span>    - true or false
+<span class="kw">string</span>  - text                 (e.g. "Hello")</pre></div>
+<div class="box tip">Choosing the right data type saves memory — don't use "double" for something as small as a person's age!</div>
+`},
+{ n:10, section:"C++ TUTORIAL", title:"C++ Operators", body:`
+<p class="lead">Operators let us perform actions on variables and values.</p>
+<ul class="points">
+<li><b>Arithmetic:</b>  +  −  *  /  %</li>
+<li><b>Assignment:</b>  =  +=  -=  *=  /=</li>
+<li><b>Comparison:</b>  ==  !=  &gt;  &lt;  &gt;=  &lt;=</li>
+<li><b>Logical:</b>  &amp;&amp; (AND)  || (OR)  ! (NOT)</li>
+</ul>
+<div class="box example"><pre><span class="kw">int</span> a = 10, b = 3;
+cout &lt;&lt; a % b; <span class="cm">// prints 1 (remainder of 10/3)</span></pre></div>
+`},
+{ n:11, section:"C++ TUTORIAL", title:"C++ Strings", body:`
+<p class="lead">A string stores a sequence of characters (text). To use strings, include the string library.</p>
+<div class="box syntax"><pre><span class="kw">#include</span> &lt;string&gt;
+string firstName = <span class="str">"Aman"</span>;
+string fullName = firstName + <span class="str">" Verma"</span>; <span class="cm">// concatenation</span>
+cout &lt;&lt; fullName.length(); <span class="cm">// string length</span></pre></div>
+<ul class="points">
+<li>Use <b>+</b> to join (concatenate) strings.</li>
+<li>Useful functions: .length(), .append(), [] to access a character by index.</li>
+</ul>
+`},
+{ n:12, section:"C++ TUTORIAL", title:"C++ Math", body:`
+<p class="lead">C++ has a built-in <span class="mark">&lt;cmath&gt;</span> library with ready-made math functions.</p>
+<div class="box syntax"><pre><span class="kw">#include</span> &lt;cmath&gt;
+sqrt(16);     <span class="cm">// 4</span>
+pow(2, 3);    <span class="cm">// 8 (2 raised to power 3)</span>
+round(4.6);   <span class="cm">// 5</span>
+max(4, 9);    <span class="cm">// 9</span>
+min(4, 9);    <span class="cm">// 4</span></pre></div>
+`},
+{ n:13, section:"C++ TUTORIAL", title:"C++ Booleans", body:`
+<p class="lead">A boolean has only two possible values: <span class="mark">true</span> or <span class="mark">false</span>. It's often the result of a comparison.</p>
+<div class="box example"><pre><span class="kw">bool</span> isPassed = (75 &gt; 40); <span class="cm">// true</span>
+cout &lt;&lt; isPassed; <span class="cm">// prints 1 (true=1, false=0)</span></pre></div>
+<div class="box tip">Booleans are the backbone of every "if" decision your program will ever make.</div>
+`},
+{ n:14, section:"C++ TUTORIAL", title:"C++ Conditions", body:`
+<p class="lead">Conditions let your program make decisions using <b>if</b>, <b>else if</b>, and <b>else</b>.</p>
+<div class="box syntax"><pre><span class="kw">if</span> (condition) {
+   <span class="cm">// runs if true</span>
+} <span class="kw">else if</span> (condition2) {
+   <span class="cm">// runs if condition2 true</span>
+} <span class="kw">else</span> {
+   <span class="cm">// runs otherwise</span>
+}</pre></div>
+<div class="box example"><pre><span class="kw">int</span> marks = 85;
+<span class="kw">if</span> (marks &gt;= 90) cout &lt;&lt; <span class="str">"Grade A"</span>;
+<span class="kw">else if</span> (marks &gt;= 75) cout &lt;&lt; <span class="str">"Grade B"</span>;
+<span class="kw">else</span> cout &lt;&lt; <span class="str">"Grade C"</span>;</pre></div>
+<div class="box output"><pre>Grade B</pre></div>
+`},
+{ n:15, section:"C++ TUTORIAL", title:"C++ Switch", body:`
+<p class="lead">The switch statement is a clean alternative to many "else if" checks, when comparing one variable to fixed values.</p>
+<div class="box syntax"><pre><span class="kw">switch</span>(day) {
+  <span class="kw">case</span> 1:
+    cout &lt;&lt; <span class="str">"Monday"</span>;
+    <span class="kw">break</span>;
+  <span class="kw">case</span> 2:
+    cout &lt;&lt; <span class="str">"Tuesday"</span>;
+    <span class="kw">break</span>;
+  <span class="kw">default</span>:
+    cout &lt;&lt; <span class="str">"Other day"</span>;
+}</pre></div>
+<div class="box tip">Never forget <b>break;</b> — without it, execution "falls through" into the next case!</div>
+`},
+{ n:16, section:"C++ TUTORIAL", title:"C++ While Loop", body:`
+<p class="lead">A while loop repeats a block of code <span class="mark">as long as</span> a condition stays true.</p>
+<div class="box syntax"><pre><span class="kw">int</span> i = 0;
+<span class="kw">while</span> (i &lt; 5) {
+   cout &lt;&lt; i &lt;&lt; <span class="str">" "</span>;
+   i++;
+}</pre></div>
+<div class="box output"><pre>0 1 2 3 4</pre></div>
+<div class="box tip">A "do-while" loop is similar, but always runs the body at least once before checking the condition.</div>
+`},
+{ n:17, section:"C++ TUTORIAL", title:"C++ For Loop", body:`
+<p class="lead">A for loop is used when you already know <span class="mark">how many times</span> you want to repeat something.</p>
+<div class="box syntax"><pre><span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 5; i++) {
+   cout &lt;&lt; i &lt;&lt; <span class="str">" "</span>;
+}</pre></div>
+<ul class="points">
+<li><b>Initialization</b> (i=0) — runs once at the start.</li>
+<li><b>Condition</b> (i&lt;5) — checked before every loop; stops when false.</li>
+<li><b>Increment</b> (i++) — runs after every loop.</li>
+</ul>
+`},
+{ n:18, section:"C++ TUTORIAL", title:"C++ Break / Continue", body:`
+<p class="lead"><b>break</b> stops the loop completely. <b>continue</b> skips only the current iteration and moves to the next one.</p>
+<div class="box example"><pre><span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; 10; i++) {
+  <span class="kw">if</span> (i == 5) <span class="kw">break</span>;     <span class="cm">// stop entirely at 5</span>
+  <span class="kw">if</span> (i % 2 == 0) <span class="kw">continue</span>; <span class="cm">// skip even numbers</span>
+  cout &lt;&lt; i &lt;&lt; <span class="str">" "</span>;
+}</pre></div>
+<div class="box output"><pre>1 3</pre></div>
+`},
+{ n:19, section:"C++ TUTORIAL", title:"C++ Arrays", body:`
+<p class="lead">An array stores <span class="mark">multiple values of the same type</span> in a single variable, in contiguous memory.</p>
+<div class="box syntax"><pre><span class="kw">int</span> marks[5] = {90, 85, 76, 60, 99};
+cout &lt;&lt; marks[0]; <span class="cm">// 90 (index starts at 0!)</span></pre></div>
+<ul class="points">
+<li>Array indexing always starts at <b>0</b>, not 1.</li>
+<li>Use a for loop to visit every element: <code>for(int i=0;i&lt;5;i++)</code></li>
+<li>The size of an array is fixed once declared.</li>
+</ul>
+`},
+{ n:20, section:"C++ TUTORIAL", title:"C++ Structures", body:`
+<p class="lead">A structure (struct) groups <span class="mark">different data types</span> together under one name — useful for representing a "record."</p>
+<div class="box syntax"><pre><span class="kw">struct</span> Student {
+  string name;
+  <span class="kw">int</span> age;
+  <span class="kw">float</span> marks;
+};
+
+Student s1 = {<span class="str">"Riya"</span>, 20, 88.5};
+cout &lt;&lt; s1.name;</pre></div>
+<div class="box tip">Structs are the stepping-stone toward "classes" — the core idea of Object-Oriented Programming!</div>
+`},
+{ n:21, section:"C++ TUTORIAL", title:"C++ References", body:`
+<p class="lead">A reference is an <span class="mark">alias</span> — another name for an already existing variable. Changes through the reference affect the original.</p>
+<div class="box syntax"><pre><span class="kw">int</span> age = 25;
+<span class="kw">int</span> &amp;ref = age; <span class="cm">// ref is now another name for age</span>
+ref = 30;
+cout &lt;&lt; age; <span class="cm">// prints 30!</span></pre></div>
+<div class="box tip">References are heavily used to pass variables into functions efficiently without copying them.</div>
+`},
+{ n:22, section:"C++ TUTORIAL", title:"C++ Pointers", body:`
+<p class="lead">A pointer <span class="mark">stores the memory address</span> of another variable, instead of storing the value directly.</p>
+<div class="box syntax"><pre><span class="kw">int</span> age = 25;
+<span class="kw">int</span> *ptr = &amp;age;  <span class="cm">// & gets the address</span>
+
+cout &lt;&lt; ptr;   <span class="cm">// prints the memory address</span>
+cout &lt;&lt; *ptr;  <span class="cm">// * dereferences: prints 25</span></pre></div>
+<div class="box tip">& = "address of"   |   * = "value at this address". Mixing these up is the most common pointer mistake!</div>
+`},
+{ n:23, section:"C++ TUTORIAL", title:"C++ Functions", body:`
+<p class="lead">A function is a reusable, named block of code that performs a specific task.</p>
+<div class="box syntax"><pre><span class="kw">int</span> add(<span class="kw">int</span> a, <span class="kw">int</span> b) {
+   <span class="kw">return</span> a + b;
+}
+
+<span class="kw">int</span> main() {
+   cout &lt;&lt; add(3, 4); <span class="cm">// 7</span>
+}</pre></div>
+<div class="box tip">Functions avoid repeating code — write once, call it as many times as you need.</div>
+`},
+{ n:24, section:"C++ TUTORIAL", title:"C++ Function Parameters", body:`
+<p class="lead">Parameters let you <span class="mark">pass data into</span> a function so it can work with different inputs each time it's called.</p>
+<div class="box syntax"><pre><span class="kw">void</span> greet(string name) {
+   cout &lt;&lt; <span class="str">"Hello, "</span> &lt;&lt; name;
+}
+greet(<span class="str">"Aman"</span>); <span class="cm">// Hello, Aman</span>
+greet(<span class="str">"Riya"</span>); <span class="cm">// Hello, Riya</span></pre></div>
+<div class="box tip">You can also set a <b>default parameter value</b>, used automatically if no argument is passed.</div>
+`},
+{ n:25, section:"C++ TUTORIAL", title:"C++ Function Overloading", body:`
+<p class="lead">Function overloading lets you define <span class="mark">multiple functions with the same name</span> but different parameter types/counts.</p>
+<div class="box syntax"><pre><span class="kw">int</span> add(<span class="kw">int</span> a, <span class="kw">int</span> b) { <span class="kw">return</span> a+b; }
+<span class="kw">double</span> add(<span class="kw">double</span> a, <span class="kw">double</span> b) { <span class="kw">return</span> a+b; }
+
+add(2, 3);      <span class="cm">// calls the int version</span>
+add(2.5, 3.5);  <span class="cm">// calls the double version</span></pre></div>
+`},
+{ n:26, section:"C++ TUTORIAL", title:"C++ Recursion", body:`
+<p class="lead">Recursion is when a function <span class="mark">calls itself</span> to solve a smaller version of the same problem.</p>
+<div class="box syntax"><pre><span class="kw">int</span> factorial(<span class="kw">int</span> n) {
+  <span class="kw">if</span> (n == 0) <span class="kw">return</span> 1;      <span class="cm">// base case</span>
+  <span class="kw">return</span> n * factorial(n-1); <span class="cm">// recursive call</span>
+}</pre></div>
+<div class="box tip">Every recursive function needs a <b>base case</b>, or it will call itself forever and crash (stack overflow)!</div>
+`},
+{ n:27, section:"C++ CLASSES", title:"C++ OOP", body:`
+<p class="lead">Object-Oriented Programming (OOP) organises code around <span class="mark">objects</span> — bundles of data (attributes) and behaviour (methods) — instead of just functions acting on data.</p>
+<ul class="points">
+<li><b>Encapsulation</b> — bundling data and methods together, hiding internal details.</li>
+<li><b>Inheritance</b> — a class can reuse features of another class.</li>
+<li><b>Polymorphism</b> — the same function name behaves differently for different objects.</li>
+<li><b>Abstraction</b> — showing only essential features, hiding complexity.</li>
+</ul>
+<div class="box tip">OOP mirrors the real world: a "Car" object has properties (colour, speed) and behaviours (drive, brake).</div>
+`},
+{ n:28, section:"C++ CLASSES", title:"C++ Classes / Objects", body:`
+<p class="lead">A <b>class</b> is a blueprint; an <b>object</b> is an actual instance built from that blueprint.</p>
+<div class="box syntax"><pre><span class="kw">class</span> Car {
+  <span class="kw">public</span>:
+    string brand;
+    <span class="kw">void</span> honk() { cout &lt;&lt; <span class="str">"Beep!"</span>; }
+};
+
+<span class="kw">int</span> main() {
+  Car myCar;            <span class="cm">// object created</span>
+  myCar.brand = <span class="str">"Toyota"</span>;
+  myCar.honk();
+}</pre></div>
+`},
+{ n:29, section:"C++ CLASSES", title:"C++ Class Methods", body:`
+<p class="lead">Methods are functions that belong to a class and describe what an object <span class="mark">can do</span>.</p>
+<div class="box syntax"><pre><span class="kw">class</span> Car {
+  <span class="kw">public</span>:
+    <span class="kw">void</span> drive() { cout &lt;&lt; <span class="str">"Vroom!"</span>; }
+};
+
+<span class="cm">// Method defined outside the class:</span>
+<span class="kw">void</span> Car::drive() { ... }</pre></div>
+`},
+{ n:30, section:"C++ CLASSES", title:"C++ Constructors", body:`
+<p class="lead">A constructor is a special method that runs <span class="mark">automatically</span> when an object is created — usually to set initial values.</p>
+<div class="box syntax"><pre><span class="kw">class</span> Car {
+  <span class="kw">public</span>:
+    string brand;
+    Car(string b) {      <span class="cm">// constructor</span>
+       brand = b;
+    }
+};
+
+Car myCar(<span class="str">"Honda"</span>);   <span class="cm">// brand is set immediately</span></pre></div>
+<div class="box tip">A constructor has the exact same name as the class and has no return type — not even void.</div>
+`},
+{ n:31, section:"C++ CLASSES", title:"C++ Access Specifiers", body:`
+<p class="lead">Access specifiers control <span class="mark">who can see or use</span> class members.</p>
+<ul class="points">
+<li><b>public</b> — accessible from anywhere outside the class.</li>
+<li><b>private</b> — accessible only inside the class itself (default for classes).</li>
+<li><b>protected</b> — like private, but also accessible in derived (child) classes.</li>
+</ul>
+<div class="box example"><pre><span class="kw">class</span> Car {
+  <span class="kw">private</span>:
+    <span class="kw">int</span> speed;    <span class="cm">// hidden from outside</span>
+  <span class="kw">public</span>:
+    <span class="kw">void</span> setSpeed(<span class="kw">int</span> s){ speed = s; }
+};</pre></div>
+`},
+{ n:32, section:"C++ CLASSES", title:"C++ Encapsulation", body:`
+<p class="lead">Encapsulation means keeping a class's data <span class="mark">private</span> and only allowing controlled access through public "getter/setter" methods.</p>
+<div class="box example"><pre><span class="kw">class</span> Account {
+  <span class="kw">private</span>: <span class="kw">double</span> balance;
+  <span class="kw">public</span>:
+    <span class="kw">void</span> setBalance(<span class="kw">double</span> b){
+      <span class="kw">if</span>(b &gt;= 0) balance = b;  <span class="cm">// validation!</span>
+    }
+    <span class="kw">double</span> getBalance(){ <span class="kw">return</span> balance; }
+};</pre></div>
+<div class="box tip">Encapsulation protects data from being set to invalid values by outside code.</div>
+`},
+{ n:33, section:"C++ CLASSES", title:"C++ Inheritance", body:`
+<p class="lead">Inheritance lets one class (child) <span class="mark">reuse</span> the properties and methods of another class (parent).</p>
+<div class="box syntax"><pre><span class="kw">class</span> Vehicle {         <span class="cm">// parent class</span>
+  <span class="kw">public</span>: <span class="kw">void</span> honk(){ cout&lt;&lt;<span class="str">"Beep"</span>; }
+};
+
+<span class="kw">class</span> Car : <span class="kw">public</span> Vehicle {  <span class="cm">// child class</span>
+  <span class="kw">public</span>: string brand = <span class="str">"Toyota"</span>;
+};
+
+Car c;
+c.honk();  <span class="cm">// inherited from Vehicle!</span></pre></div>
+`},
+{ n:34, section:"C++ CLASSES", title:"C++ Polymorphism", body:`
+<p class="lead">Polymorphism ("many forms") lets the <span class="mark">same method name</span> behave differently depending on which object calls it.</p>
+<div class="box example"><pre><span class="kw">class</span> Animal {
+  <span class="kw">public</span>: <span class="kw">virtual void</span> sound(){ cout&lt;&lt;<span class="str">"..."</span>; }
+};
+<span class="kw">class</span> Dog : <span class="kw">public</span> Animal {
+  <span class="kw">public</span>: <span class="kw">void</span> sound() <span class="kw">override</span> { cout&lt;&lt;<span class="str">"Woof"</span>; }
+};
+<span class="kw">class</span> Cat : <span class="kw">public</span> Animal {
+  <span class="kw">public</span>: <span class="kw">void</span> sound() <span class="kw">override</span> { cout&lt;&lt;<span class="str">"Meow"</span>; }
+};</pre></div>
+<div class="box tip">The keyword <b>virtual</b> is what makes this dynamic, run-time behaviour possible.</div>
+`},
+{ n:35, section:"C++ CLASSES", title:"C++ Files", body:`
+<p class="lead">C++ can read and write files using the <span class="mark">&lt;fstream&gt;</span> library.</p>
+<div class="box syntax"><pre><span class="kw">#include</span> &lt;fstream&gt;
+
+ofstream MyFile(<span class="str">"data.txt"</span>);  <span class="cm">// write</span>
+MyFile &lt;&lt; <span class="str">"Hello File!"</span>;
+MyFile.close();
+
+ifstream ReadFile(<span class="str">"data.txt"</span>); <span class="cm">// read</span>
+string line;
+getline(ReadFile, line);</pre></div>
+`},
+{ n:36, section:"C++ CLASSES", title:"C++ Exceptions", body:`
+<p class="lead">Exceptions let your program handle errors <span class="mark">gracefully</span> instead of crashing, using try / catch / throw.</p>
+<div class="box syntax"><pre><span class="kw">try</span> {
+  <span class="kw">int</span> age = -1;
+  <span class="kw">if</span>(age &lt; 0) <span class="kw">throw</span> 505;
+} <span class="kw">catch</span> (<span class="kw">int</span> errCode) {
+  cout &lt;&lt; <span class="str">"Error code: "</span> &lt;&lt; errCode;
+}</pre></div>
+<div class="box tip">try = code that might fail. throw = signal an error. catch = handle that error.</div>
+`}
+];
+
+const root = document.getElementById('root');
+const jumpSelect = document.getElementById('jumpSelect');
+
+// ---- Cover / Index Page ----
+let indexHtml = `
+<div class="page" id="index">
+  <div class="badge">
+    <div class="brand"><div class="dot">C++</div><span>Handwritten Notes</span></div>
+    <div class="pagebox">Page No. | Date</div>
+  </div>
+  <h1 class="big-title">INDEX</h1>
+  <div class="section-label">C++ Tutorial</div>
+  <ul class="index-list">
+`;
+chapters.filter(c=>c.section==="C++ TUTORIAL").forEach(c=>{
+  indexHtml += `<li><span class="num">${c.n}.</span> <a href="#ch${c.n}">${c.title}</a></li>`;
+});
+indexHtml += `</ul><div class="section-label">C++ Classes</div><ul class="index-list">`;
+chapters.filter(c=>c.section==="C++ CLASSES").forEach(c=>{
+  indexHtml += `<li><span class="num">${c.n}.</span> <a href="#ch${c.n}">${c.title}</a></li>`;
+});
+indexHtml += `</ul></div>`;
+
+root.innerHTML = indexHtml;
+
+// ---- Chapter Pages ----
+chapters.forEach((c, idx)=>{
+  const prev = chapters[idx-1];
+  const next = chapters[idx+1];
+  const page = document.createElement('div');
+  page.className = 'page';
+  page.id = `ch${c.n}`;
+  page.innerHTML = `
+    <div class="badge">
+      <div class="brand"><div class="dot">C++</div><span class="chapter-num">${c.section}</span></div>
+      <div class="pagebox">Chapter ${c.n}</div>
+    </div>
+    <h2 class="chap-title"><span class="cpp">C++</span> ${c.title.replace(/^C\+\+\s*/,'')}</h2>
+    ${c.body}
+    <div class="nav-btns">
+      <a href="#${prev ? 'ch'+prev.n : 'index'}">&larr; ${prev ? prev.title : 'Index'}</a>
+      <a href="#index">Index ☰</a>
+      <a href="#${next ? 'ch'+next.n : 'index'}">${next ? next.title : 'Index'} &rarr;</a>
+    </div>
+  `;
+  root.appendChild(page);
+
+  const opt = document.createElement('option');
+  opt.value = `ch${c.n}`;
+  opt.textContent = `${c.n}. ${c.title}`;
+  jumpSelect.appendChild(opt);
+});
+</script>
+</body>
+</html>
