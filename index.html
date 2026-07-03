@@ -65,6 +65,11 @@
     font-family:'Kalam',cursive; font-size:14px; color:#555; margin-bottom:6px;
   }
   .badge .brand{display:flex; align-items:center; gap:8px;}
+  .author-tag{
+    font-family:'Caveat',cursive; font-weight:700; font-size:16px; color:#7a3b12;
+    background:var(--highlight, #fff29a); padding:2px 10px; border-radius:12px;
+    transform:rotate(-2deg); display:inline-block; margin-left:8px; opacity:.9;
+  }
   .brand .dot{
     width:34px;height:34px;border-radius:50%;background:var(--title-orange);
     display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Caveat',cursive;font-weight:700;font-size:20px;
@@ -116,6 +121,10 @@
   .box.output::before{content:"🖥️ OUTPUT"; display:block; font-family:'Caveat',cursive; font-size:22px; color:#555; margin-bottom:4px;}
   .box.tip{border-style:solid; border-color:var(--ink-green); background:#eefaf0;}
   .box.tip::before{content:"⭐ REMEMBER"; display:block; font-family:'Caveat',cursive; font-size:22px; color:var(--ink-green); margin-bottom:4px;}
+  .box.mistake{border-style:solid; border-color:var(--ink-red); background:#fdeceb;}
+  .box.mistake::before{content:"🚫 COMMON MISTAKE"; display:block; font-family:'Caveat',cursive; font-size:22px; color:var(--ink-red); margin-bottom:4px;}
+  .box.compare{border-style:solid; border-color:#8a6bbf; background:#f3effa;}
+  .box.compare::before{content:"🔍 GOOD TO COMPARE"; display:block; font-family:'Caveat',cursive; font-size:22px; color:#5b3a9e; margin-bottom:4px;}
 
   pre{
     font-family:'Kalam',cursive;
@@ -145,6 +154,7 @@
 
 <div class="toolbar">
   <b>C++ Notes</b>
+  <span style="font-family:'Caveat',cursive;font-size:18px;color:#ffd27a;">✍️ by Himanshu Dalak</span>
   <span>Jump to chapter:</span>
   <select id="jumpSelect" onchange="location.hash=this.value;"></select>
 </div>
@@ -315,6 +325,7 @@ cout &lt;&lt; isPassed; <span class="cm">// prints 1 (true=1, false=0)</span></p
     cout &lt;&lt; <span class="str">"Other day"</span>;
 }</pre></div>
 <div class="box tip">Never forget <b>break;</b> — without it, execution "falls through" into the next case!</div>
+<div class="box mistake">switch only works with integers, characters, or enums — you cannot switch on a float, double, or string.</div>
 `},
 { n:16, section:"C++ TUTORIAL", title:"C++ While Loop", body:`
 <p class="lead">A while loop repeats a block of code <span class="mark">as long as</span> a condition stays true.</p>
@@ -355,6 +366,7 @@ cout &lt;&lt; marks[0]; <span class="cm">// 90 (index starts at 0!)</span></pre>
 <li>Use a for loop to visit every element: <code>for(int i=0;i&lt;5;i++)</code></li>
 <li>The size of an array is fixed once declared.</li>
 </ul>
+<div class="box mistake">marks[5] holds indices 0 to 4 only — accessing marks[5] reads outside the array (undefined behaviour), a bug known as "off-by-one."</div>
 `},
 { n:20, section:"C++ TUTORIAL", title:"C++ Structures", body:`
 <p class="lead">A structure (struct) groups <span class="mark">different data types</span> together under one name — useful for representing a "record."</p>
@@ -384,6 +396,11 @@ cout &lt;&lt; age; <span class="cm">// prints 30!</span></pre></div>
 cout &lt;&lt; ptr;   <span class="cm">// prints the memory address</span>
 cout &lt;&lt; *ptr;  <span class="cm">// * dereferences: prints 25</span></pre></div>
 <div class="box tip">& = "address of"   |   * = "value at this address". Mixing these up is the most common pointer mistake!</div>
+<ul class="points">
+<li>A pointer that isn't pointing anywhere should be set to <b>nullptr</b>, not left uninitialised.</li>
+<li>Pointer arithmetic (ptr+1) moves by the <b>size of the data type</b> it points to, not by 1 byte.</li>
+</ul>
+<div class="box mistake">Dereferencing a nullptr or an uninitialised pointer (e.g. <code>cout &lt;&lt; *ptr;</code> before ptr is set) causes a crash — always check <code>if(ptr != nullptr)</code> first.</div>
 `},
 { n:23, section:"C++ TUTORIAL", title:"C++ Functions", body:`
 <p class="lead">A function is a reusable, named block of code that performs a specific task.</p>
@@ -420,6 +437,12 @@ add(2.5, 3.5);  <span class="cm">// calls the double version</span></pre></div>
   <span class="kw">return</span> n * factorial(n-1); <span class="cm">// recursive call</span>
 }</pre></div>
 <div class="box tip">Every recursive function needs a <b>base case</b>, or it will call itself forever and crash (stack overflow)!</div>
+<div class="box output">factorial(4)
+= 4 * factorial(3)
+= 4 * (3 * factorial(2))
+= 4 * (3 * (2 * factorial(1)))
+= 4 * 3 * 2 * 1 = 24</div>
+<div class="box compare">Recursion vs Loop: a loop is usually faster and uses less memory, but recursion often makes tree/graph problems (like traversals) far easier to read and write.</div>
 `},
 { n:27, section:"C++ CLASSES", title:"C++ OOP", body:`
 <p class="lead">Object-Oriented Programming (OOP) organises code around <span class="mark">objects</span> — bundles of data (attributes) and behaviour (methods) — instead of just functions acting on data.</p>
@@ -506,6 +529,13 @@ Car myCar(<span class="str">"Honda"</span>);   <span class="cm">// brand is set 
 
 Car c;
 c.honk();  <span class="cm">// inherited from Vehicle!</span></pre></div>
+<ul class="points">
+<li><b>Single</b> — one parent, one child.</li>
+<li><b>Multilevel</b> — a chain: grandparent → parent → child.</li>
+<li><b>Multiple</b> — a child inherits from more than one parent class.</li>
+<li><b>Hierarchical</b> — many children inherit from one parent.</li>
+</ul>
+<div class="box mistake">Using <code>class Car : Vehicle</code> without the word <b>public</b> makes the inheritance private by default for classes — members of Vehicle then become inaccessible outside Car.</div>
 `},
 { n:34, section:"C++ CLASSES", title:"C++ Polymorphism", body:`
 <p class="lead">Polymorphism ("many forms") lets the <span class="mark">same method name</span> behave differently depending on which object calls it.</p>
@@ -541,6 +571,81 @@ getline(ReadFile, line);</pre></div>
   cout &lt;&lt; <span class="str">"Error code: "</span> &lt;&lt; errCode;
 }</pre></div>
 <div class="box tip">try = code that might fail. throw = signal an error. catch = handle that error.</div>
+`},
+{ n:37, section:"C++ MORE TOPICS", title:"C++ Unions", body:`
+<p class="lead">A union is like a struct, but all its members <span class="mark">share the same memory location</span> — only one member can hold a valid value at a time.</p>
+<div class="box syntax"><pre><span class="kw">union</span> Data {
+  <span class="kw">int</span> i;
+  <span class="kw">float</span> f;
+  <span class="kw">char</span> c;
+};
+Data d;
+d.i = 10;   <span class="cm">// now d.f and d.c are meaningless</span></pre></div>
+<div class="box compare">struct: each member gets its own memory (total size = sum of members). union: all members overlap the same memory (total size = size of largest member).</div>
+`},
+{ n:38, section:"C++ MORE TOPICS", title:"C++ Memory Allocation", body:`
+<p class="lead">C++ lets you allocate memory <span class="mark">dynamically</span> at runtime using <b>new</b>, and release it using <b>delete</b>.</p>
+<div class="box syntax"><pre><span class="kw">int</span> *ptr = <span class="kw">new</span> <span class="kw">int</span>;      <span class="cm">// allocate single int</span>
+*ptr = 25;
+<span class="kw">delete</span> ptr;              <span class="cm">// free it</span>
+
+<span class="kw">int</span> *arr = <span class="kw">new</span> <span class="kw">int</span>[5];   <span class="cm">// allocate array</span>
+<span class="kw">delete</span>[] arr;            <span class="cm">// free array (note the [])</span></pre></div>
+<div class="box mistake">Forgetting delete causes a <b>memory leak</b>. Using delete instead of delete[] on an array causes undefined behaviour.</div>
+`},
+{ n:39, section:"C++ MORE TOPICS", title:"C++ Abstraction", body:`
+<p class="lead">Abstraction means showing only the <span class="mark">essential features</span> of an object while hiding the complex implementation details.</p>
+<div class="box example"><pre><span class="kw">class</span> Shape {
+  <span class="kw">public</span>:
+    <span class="kw">virtual</span> <span class="kw">double</span> area() = 0; <span class="cm">// pure virtual function</span>
+};
+<span class="cm">// Shape is now an "abstract class" — you can't create a Shape object directly,</span>
+<span class="cm">// only classes that implement area() (like Circle, Square) can be created.</span></pre></div>
+<div class="box tip">Real-life example: a car's steering wheel is an abstraction — you turn it without needing to know how the steering mechanism works internally.</div>
+`},
+{ n:40, section:"C++ MORE TOPICS", title:"C++ Destructors", body:`
+<p class="lead">A destructor is a special method that runs <span class="mark">automatically</span> when an object is destroyed — used to release resources (memory, files) that object was using.</p>
+<div class="box syntax"><pre><span class="kw">class</span> Car {
+  <span class="kw">public</span>:
+    Car() { cout &lt;&lt; <span class="str">"Car created"</span>; }
+    ~Car() { cout &lt;&lt; <span class="str">"Car destroyed"</span>; }  <span class="cm">// destructor</span>
+};</pre></div>
+<div class="box tip">A destructor has the class name preceded by a <b>~</b>, takes no parameters, and cannot be overloaded — a class has only one destructor.</div>
+`},
+{ n:41, section:"C++ MORE TOPICS", title:"C++ Standard Template Library (STL)", body:`
+<p class="lead">The STL is a collection of <span class="mark">ready-made template classes and functions</span> for common data structures and algorithms.</p>
+<ul class="points">
+<li><b>Containers:</b> vector, list, map, set, stack, queue.</li>
+<li><b>Iterators:</b> used to move through container elements.</li>
+<li><b>Algorithms:</b> sort(), find(), reverse(), and more.</li>
+</ul>
+<div class="box example"><pre><span class="kw">#include</span> &lt;vector&gt;
+vector&lt;<span class="kw">int</span>&gt; nums = {5, 2, 8, 1};
+sort(nums.begin(), nums.end());  <span class="cm">// 1 2 5 8</span></pre></div>
+<div class="box tip">STL saves huge amounts of time — you rarely need to write your own linked list or sorting algorithm from scratch.</div>
+`},
+{ n:42, section:"C++ MORE TOPICS", title:"C++ Preprocessors", body:`
+<p class="lead">Preprocessor directives run <span class="mark">before compilation</span> begins — they start with <b>#</b> and edit the source text itself.</p>
+<div class="box syntax"><pre><span class="kw">#include</span> &lt;iostream&gt;   <span class="cm">// include a header file</span>
+<span class="kw">#define</span> PI 3.14        <span class="cm">// macro constant</span>
+<span class="kw">#ifndef</span> HEADER_H       <span class="cm">// include guard</span>
+<span class="kw">#define</span> HEADER_H
+<span class="kw">#endif</span></pre></div>
+<div class="box tip">Include guards (#ifndef/#define/#endif) stop the same header file from being included twice in one build.</div>
+`},
+{ n:43, section:"C++ MORE TOPICS", title:"C++ Storage Classes", body:`
+<p class="lead">Storage classes define a variable's <span class="mark">scope, lifetime, and visibility</span> across a program.</p>
+<ul class="points">
+<li><b>auto</b> — default for local variables (also used for type inference in modern C++).</li>
+<li><b>static</b> — retains its value between function calls; only initialised once.</li>
+<li><b>extern</b> — refers to a global variable defined in another file.</li>
+<li><b>register</b> — suggests storing the variable in a CPU register for fast access.</li>
+</ul>
+<div class="box example"><pre><span class="kw">void</span> counter(){
+  <span class="kw">static</span> <span class="kw">int</span> count = 0;  <span class="cm">// keeps value across calls</span>
+  count++;
+  cout &lt;&lt; count;
+}</pre></div>
 `}
 ];
 
@@ -551,7 +656,7 @@ const jumpSelect = document.getElementById('jumpSelect');
 let indexHtml = `
 <div class="page" id="index">
   <div class="badge">
-    <div class="brand"><div class="dot">C++</div><span>Handwritten Notes</span></div>
+    <div class="brand"><div class="dot">C++</div><span>Handwritten Notes</span><span class="author-tag">by Himanshu Dalak</span></div>
     <div class="pagebox">Page No. | Date</div>
   </div>
   <h1 class="big-title">INDEX</h1>
@@ -563,6 +668,10 @@ chapters.filter(c=>c.section==="C++ TUTORIAL").forEach(c=>{
 });
 indexHtml += `</ul><div class="section-label">C++ Classes</div><ul class="index-list">`;
 chapters.filter(c=>c.section==="C++ CLASSES").forEach(c=>{
+  indexHtml += `<li><span class="num">${c.n}.</span> <a href="#ch${c.n}">${c.title}</a></li>`;
+});
+indexHtml += `</ul><div class="section-label">More Topics</div><ul class="index-list">`;
+chapters.filter(c=>c.section==="C++ MORE TOPICS").forEach(c=>{
   indexHtml += `<li><span class="num">${c.n}.</span> <a href="#ch${c.n}">${c.title}</a></li>`;
 });
 indexHtml += `</ul></div>`;
@@ -578,7 +687,7 @@ chapters.forEach((c, idx)=>{
   page.id = `ch${c.n}`;
   page.innerHTML = `
     <div class="badge">
-      <div class="brand"><div class="dot">C++</div><span class="chapter-num">${c.section}</span></div>
+      <div class="brand"><div class="dot">C++</div><span class="chapter-num">${c.section}</span><span class="author-tag">by Himanshu Dalak</span></div>
       <div class="pagebox">Chapter ${c.n}</div>
     </div>
     <h2 class="chap-title"><span class="cpp">C++</span> ${c.title.replace(/^C\+\+\s*/,'')}</h2>
